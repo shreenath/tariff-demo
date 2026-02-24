@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import './index.css';
 
 // --- TS Types ---
-type ScreenId = 'welcome' | 'qualification' | 'supply_chain' | 'documents' | 'timeline' | 'calculating' | 'dashboard' | 'fallback_qualification' | 'fallback_supplier' | 'fallback_domestic';
+type ScreenId = 'welcome' | 'qualification' | 'supply_chain' | 'documents' | 'timeline' | 'calculating' | 'dashboard' | 'lead_capture' | 'fallback_qualification' | 'fallback_supplier' | 'fallback_domestic';
 
 interface ScreenerState {
   currentScreen: ScreenId;
@@ -34,6 +34,7 @@ function App() {
       'timeline': 75,
       'calculating': 90,
       'dashboard': 100,
+      'lead_capture': 100,
       'fallback_qualification': 100,
       'fallback_supplier': 100,
       'fallback_domestic': 100
@@ -264,13 +265,64 @@ function App() {
             </div>
 
             <div className="dashboard-actions">
-              <button className="action-btn" onClick={() => window.location.href = 'mailto:?subject=Aurora Tariff Recovery Summary&body=I have completed an assessment on the Aurora Screener...'}>📧 Email this summary to my broker</button>
-              <button className="action-btn" onClick={() => window.open('https://forms.gle/YOUR_FORM_LINK_HERE', '_blank')}>🤝 Connect me with a vetted trade attorney (Google Form)</button>
-              <button className="action-btn" onClick={() => window.print()}>🖨️ Print my thorough compliance checklist</button>
+              <button className="action-btn" onClick={() => handleNext('lead_capture')}>📧 Email this summary to my broker</button>
+              <button className="action-btn" onClick={() => handleNext('lead_capture')}>🤝 Connect me with a vetted trade attorney</button>
+              <button className="action-btn" onClick={() => handleNext('lead_capture')}>🖨️ Print my thorough compliance checklist</button>
             </div>
 
             <button className="text-button" onClick={() => window.location.reload()} style={{ marginTop: '2rem' }}>
               Start Over
+            </button>
+          </div>
+        );
+
+      case 'lead_capture':
+        return (
+          <div className="fade-enter">
+            <h1 className="title">Secure Your Aurora Recovery Plan</h1>
+            <p className="subtitle">
+              Share your email, and we will alert you when the full screening is live with our partners, and send you your verified results.
+            </p>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const email = formData.get('email');
+
+              // This is a Google Forms backend submission template. 
+              // The user will need to replace FORM_ID and the entry.123456 IDs with their actual Google Form field IDs.
+              // To submit silently without leaving the page, we use a hidden iframe or simple fetch (no-cors).
+              const formActionBase = "https://docs.google.com/forms/d/e/YOUR_FORM_ID_HERE/formResponse";
+              const params = new URLSearchParams();
+              params.append('entry.111111', email as string);
+              params.append('entry.222222', state.answers.qualification || 'unknown');
+              params.append('entry.333333', state.answers.supply_chain || 'unknown');
+              params.append('entry.444444', state.answers.documents || 'unknown');
+              params.append('entry.555555', state.answers.timeline || 'unknown');
+
+              // Fire and forget submission
+              fetch(`${formActionBase}?${params.toString()}`, { mode: 'no-cors' })
+                .then(() => {
+                  alert("Thank you! Your information has been securely submitted.");
+                  handleNext('welcome'); // or somewhere else
+                })
+                .catch(() => {
+                  alert("There was an error, but in a real app this would submit to the Google Form.");
+                });
+            }}>
+              <div className="form-group" style={{ marginBottom: '1.5rem', textAlign: 'left' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Business Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="name@company.com"
+                  required
+                  style={{ width: '100%', padding: '1rem', borderRadius: '8px', border: '1.5px solid var(--border-color)', fontSize: '1rem', fontFamily: 'Inter' }}
+                />
+              </div>
+              <button type="submit" className="primary-button">Submit & Get Updates</button>
+            </form>
+            <button className="text-button" onClick={() => handleNext('dashboard')} style={{ marginTop: '1.5rem' }}>
+              ← Back to Dashboard
             </button>
           </div>
         );
