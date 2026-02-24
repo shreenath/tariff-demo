@@ -264,9 +264,9 @@ function App() {
             </div>
 
             <div className="dashboard-actions">
-              <button className="action-btn">📧 Email this summary to my broker</button>
-              <button className="action-btn">🤝 Connect me with a vetted trade attorney</button>
-              <button className="action-btn">🖨️ Print my thorough compliance checklist</button>
+              <button className="action-btn" onClick={() => window.location.href = 'mailto:?subject=Aurora Tariff Recovery Summary&body=I have completed an assessment on the Aurora Screener...'}>📧 Email this summary to my broker</button>
+              <button className="action-btn" onClick={() => window.open('https://forms.gle/YOUR_FORM_LINK_HERE', '_blank')}>🤝 Connect me with a vetted trade attorney (Google Form)</button>
+              <button className="action-btn" onClick={() => window.print()}>🖨️ Print my thorough compliance checklist</button>
             </div>
 
             <button className="text-button" onClick={() => window.location.reload()} style={{ marginTop: '2rem' }}>
